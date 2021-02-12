@@ -1,6 +1,11 @@
 # F123
 A Web VR experience that talks about a tragic plane accident in Japan
 
+Visit https://flight123.glitch.me/
+
+<img src="https://i.imgur.com/M4e9lRu.png" alt="Screenshot of the start screen" width="500"/>
+
+
 ## Citations and Attributions
 
 - Background music, “Atmospheric Cinematic Ambient” by AShamaluevMusic <https://www.ashamaluevmusic.com>, available under its Terms of Use <https://www.ashamaluevmusic.com/terms>
