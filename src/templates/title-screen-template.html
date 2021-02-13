@@ -1,0 +1,26 @@
+<a-plane id="titleBlackPlane"
+         color="#383c3d" 
+         material="shader: flat; transparent: true; opacity: 1" 
+         height="0.42" 
+         width="0.9"
+         position="0.617 1.649 -0.01"
+         mixin="titleAnimationMixin"></a-plane>
+<a-entity id="samStoryTextSolid" text-geometry="value: Sam's Story; font: #montserratFont; size: 0.12; height: 0;"
+          material="shader: flat; color: white; transparent: true; opacity: 1"
+          position="-1.24 1.866 0"
+          mixin="titleAnimationMixin"></a-entity>
+<a-entity id="samStoryTextTransparent" text-geometry="value: Sam's Story; font: #montserratFont; size: 0.12; bevelEnabled: true; bevelSize: 0.01; bevelThickness: 0.02; curveSegments: 1;  height: 0;"
+          material="shader: flat; color: white; transparent: true; opacity: 0.4"
+          position="-1.24 1.866 0"
+          mixin="titleAnimationMixin"></a-entity>
+<a-entity id="titleText"
+          text="font: roboto; value: Flight 123; align: center; width: 12;"
+          position="-0.14 1.649 0"
+          mixin="titleAnimationMixin"
+          animation__fadeout_disappear="property: components.text.material.uniforms.opacity.value;"></a-entity>
+<a-entity button="text: Start; backgroundColor: white"
+          event-bubbler="eventName: loaded; once: true"
+          start-button
+          scale="0.5 0.5 0.5"
+          position="0 0.5 0.4"
+          rotation="-25 0 0"></a-entity>

@@ -1,0 +1,157 @@
+<a-entity layout="type: line; margin: 0.58; align: center" position="0 1.5 -1.9"
+          mixin="visibilityControlMixin"
+          class="columbiaImages grouping">
+  <a-image id="columbiaImageEntity" 
+           src="#spaceShuttleColumbiaImage" 
+           width="0.68" 
+           height="1"
+           mixin="narrationItemMixin eventDisappearMixin">
+  </a-image>
+  <a-image id="fallingColumbiaEntity"
+           src="#fallingColumbiaImage" 
+           width="0.44" 
+           height="1"
+           mixin="narrationItemMixin eventDisappearMixin">
+  </a-image>
+</a-entity>
+
+<a-entity position="0 1.5 -1.9"
+          mixin="visibilityControlMixin"
+          class="japanMap grouping">
+  <a-plane id="japanMapBlueBgEntity"
+           width="1.1"
+           height="1.1"
+           position="0 0 -10"
+           color="#7FC8ED"
+           material="shader: flat"
+           mixin="narrationItemMixin eventDisappearMixin">
+  </a-plane>
+</a-entity>
+
+<a-entity position="0 1.5 -1.60"
+          mixin="visibilityControlMixin"
+          class="japanMap grouping">
+  <a-image id="japanMapOverlayEntity"
+           src="#japanMapOverlayImage"
+           width="1"
+           material="transparent: true"
+           mixin="narrationItemMixin eventDisappearMixin">
+  </a-image>
+</a-entity>
+
+<a-entity position="0 1.5 -1.9"
+          mixin="visibilityControlMixin"
+          class="jalTakeoff grouping">
+  <a-image id="japanTakeoffEntity"
+           src="#jalTakeoffImage"
+           width="1.81"
+           height="1"
+           material="transparent: true"
+           mixin="narrationItemMixin eventDisappearMixin">
+  </a-image>
+</a-entity>
+
+<a-entity id="lowPolyDetailedPlaneEntity"
+          gltf-model="#lowPolyDetailedPlane"
+          model-unlit
+          position="25 4 -10"
+          rotation="4 90 -5"
+          mixin="lowPolyDetailedPlaneModelMixin eventDisappearMixin"></a-entity>
+
+<a-entity position="0 1 -1.2"
+          rotation="-50 0 0"
+          mixin="visibilityControlMixin"
+          class="japanMapPrefectures grouping">  
+  <a-plane class="largeMapMaskPlaneEntity" 
+           height="1.6" width="4.8" material="transparent: true; opacity: 0" position="0 1.6 0.01"
+           mixin="eventDisappearMixin"></a-plane>
+  <a-plane class="largeMapMaskPlaneEntity" 
+           height="1.6" width="4.8" material="transparent: true; opacity: 0" position="0 -1.6 0.01"
+           mixin="eventDisappearMixin"></a-plane>
+  <a-plane class="largeMapMaskPlaneEntity" 
+           height="1.6" width="1.6" material="transparent: true; opacity: 0" position="1.6 0 0.01"
+           mixin="eventDisappearMixin"></a-plane>
+  <a-plane class="largeMapMaskPlaneEntity" 
+           height="1.6" width="1.6" material="transparent: true; opacity: 0" position="-1.6 0 0.01"
+           mixin="eventDisappearMixin"></a-plane>
+  <a-entity position="0 0 -0.01" >
+    <a-plane id="japanMapBlueLargeBgEntity"
+             width="2" 
+             height="2" 
+             color="#7FC8ED" 
+             material="shader: flat" 
+             mixin="narrationItemMixin eventDisappearMixin"></a-plane>
+  </a-entity>
+  <a-image id="japanPrefecturesEntity"
+           src="#japanWithPrefecturesImage"
+           width="2.134"
+           height="2.134"
+           material="transparent: true"
+           scale="1.5 1.5 1"
+           mixin="narrationItemMixin japanMapScaleMixin eventDisappearMixin">
+  </a-image>
+  <a-entity id="mapPrefectureTextGunmaEntity"
+            text="font: aileronsemibold; value: Gunma; align: center; color: #393c3d; width: 1.5;"
+            position="-0.146 0.603 0.1"
+            rotation="45 0 0"
+            mixin="narrationTextMixin eventDisappearMixin"></a-entity>
+  <a-entity id="mapPrefectureTextSaitamaEntity"
+            text="font: aileronsemibold; value: Saitama; align: center; color: #393c3d; width: 1.5;"
+            position="0.192 0.518 0.1"
+            rotation="43 0 0"
+            mixin="narrationTextMixin eventDisappearMixin"></a-entity>
+  <a-entity id="mapPrefectureTextTokyoEntity"
+            text="font: aileronsemibold; value: Tokyo; align: center; color: #393c3d; width: 1.5;"
+            position="0.236 0.263 0.1"
+            rotation="40 0 0"
+            mixin="narrationTextMixin eventDisappearMixin"></a-entity>
+  <a-entity id="mapPrefectureTextYamanashiEntity"
+            text="font: aileronsemibold; value: Yamanashi; align: center; color: #393c3d; width: 1.5;"
+            position="-0.261 0.227 0.1"
+            rotation="40 0 0"
+            mixin="narrationTextMixin eventDisappearMixin"></a-entity>
+  <a-entity id="mapPrefectureTextKanagawaEntity"
+            text="font: aileronsemibold; value: Kanagawa; align: center; color: #393c3d; width: 1.5;"
+            position="0.196 0.060 0.1"
+            rotation="35 0 0"
+            mixin="narrationTextMixin eventDisappearMixin"></a-entity>
+  <a-entity id="mapPrefectureTextChibaEntity"
+            text="font: aileronsemibold; value: Chiba; align: center; color: #393c3d; width: 1.5;"
+            position="0.658 -0.036 0.1"
+            rotation="35 0 0"
+            mixin="narrationTextMixin eventDisappearMixin"></a-entity>
+  <a-entity id="mapPrefectureTextShizuokaEntity"
+            text="font: aileronsemibold; value: Shizuoka; align: center; color: #393c3d; width: 1.5;"
+            position="-0.591 -0.259 0.1"
+            rotation="30 0 0"
+            mixin="narrationTextMixin eventDisappearMixin"></a-entity>
+  <a-ring id="hanedaMapLocationRingEntity" 
+          position="0.473 0.158 0.05" color="#666c75" material="shader: flat; transparent: true"
+          radius-inner="0.00001" radius-outer="0.0001"
+          mixin="hanedaLocationRingMixin eventDisappearMixin"></a-ring>
+  <a-entity id="flightPathEntity"
+            meshline="lineWidth: 0.007; curve: #flightPath; color: #666c75; sizeAttenuation: 1; transparent: true"
+            mixin="flightPathMeshLineMixin eventDisappearMixin"></a-entity>
+  <a-plane id="emergencyContactMapLocationPlaneEntity"
+           width="0.031" height="0.031" color="#666c75" 
+           material="shader: flat; transparent: true" position="0.048 -0.473 0.05"
+           rotation="0 0 -18"
+           mixin="emergencyContactLocationPlaneMixin eventDisappearMixin"></a-plane>
+  <a-entity id="lowPolyPlaneForMapEntity"
+            gltf-model="#lowPolyPlaneForMap"
+            follow-curve="curve: #flightPath"
+            scale="0.30 0.30 0.30"
+            model-offset="offset: 0 0 0.3; rotationOffset: 90 0 0;"
+            model-unlit
+            mixin="lowPolyPlaneModelMixin eventDisappearMixin"></a-entity>
+</a-entity>
+
+<a-entity position="0 1.2 -0.7"
+          mixin="visibilityControlMixin"
+          class="jalseating grouping"
+          template="src: src/templates/seating-map.html; type: nunjucks"></a-entity>
+
+<a-entity id="toBeContinuedTextEntity"
+          position="0, 1.6, -1"
+          text="value: Hope you enjoyed it.\nThis was an experiment to test A-Frame VR.\nFeel free to exit out/close this page.; align: center; width: 1.5;"
+          mixin="toBeContinuedTextMixin visibilityControlMixin"></a-entity>

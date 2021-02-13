@@ -1,0 +1,437 @@
+<!-- Kebabio kebab -->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title></title>
+  <meta name="description" content="Text animation test" charset="UTF-8">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+  <script src="https://cdn.jsdelivr.net/npm/howler@2.2.1/dist/howler.js"></script>
+  <script src="libraries/aframe-dev.js"></script>
+  <script src="src/utils/use-howler-on-apple.js"></script>
+  <script src="src/utils/all-sounds.js"></script>
+  <script src="libraries/three-svgloader.js"></script>
+  <script src="libraries/aframe-animation-timeline-component.js"></script>
+  <script src="libraries/aframe-teleport-controls.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nunjucks/2.3.0/nunjucks.min.js"></script>
+  <script src="libraries/aframe-template-component.min.js"></script>
+  <script src="libraries/aframe-meshline-component.js"></script>
+
+  <script
+    src="https://unpkg.com/aframe-text-geometry-component@0.5.1/dist/aframe-text-geometry-component.min.js"></script>
+  <script src="https://unpkg.com/aframe-layout-component@5.3.0/dist/aframe-layout-component.min.js"></script>
+  <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+
+  <script src="src/utils/core-utils.js"></script>
+  <script src="src/components/button-component.js"></script>
+  <script src="src/components/start-button-component.js"></script>
+  <script src="src/components/controller-support-component.js"></script>
+  <script src="src/components/event-bubbler-component.js"></script>
+  <script src="src/components/svg-curve-component.js"></script>
+  <script src="src/components/follow-curve-component.js"></script>
+  <script src="src/components/model-opacity-component.js"></script>
+  <script src="src/components/model-offset-component.js"></script>
+  <script src="src/components/model-unlit-component.js"></script>
+  <script src="src/components/instance-gltf-component.js"></script>
+  <script src="src/components/subtitle-component.js"></script>
+  <script src="src/components/event-transformer-component.js"></script>
+  <script src="src/components/main-component.js"></script> <!-- main script -->
+</head>
+
+<body>
+  <!-- careful with the stats component as it causes frame skips when used in VR  -->
+  <!-- cursor="rayOrigin: mouse" for debugging -->
+  <a-scene raycaster="objects: .collidable" loading-screen="dotsColor: gray; backgroundColor: black"
+    renderer="colorManagement: true" controller-support main>
+
+    <a-assets>
+      <a-asset-item id="montserratFont" src="src/assets/Montserrat-Medium.json"></a-asset-item>
+      <a-asset-item id="introductorySubtitle" src="src/assets/intro-subtitle.json"></a-asset-item>
+      <audio id="planeTakeoffSound" src="src/assets/sound/plane-takeoff-sound.mp3" preload="auto"
+        crossorigin="anonymous"></audio>
+
+      <!-- Note: images should be in base-2, I recommend using sites like gumlet to auto resize your images -->
+      <img id="spaceShuttleColumbiaImage" crossorigin="anonymous" src="src/assets/image/spaceshuttlecolumbia.png">
+      <img id="fallingColumbiaImage" crossorigin="anonymous" src="src/assets/image/fallingcolumbia.png">
+      <img id="japanMapOverlayImage" crossorigin="anonymous" src="src/assets/image/japanmapoverlay.png">
+      <img id="jalTakeoffImage" crossorigin="anonymous" src="src/assets/image/jal-photo-fadeborder.png">
+      <img id="japanWithPrefecturesImage" crossorigin="anonymous" src="src/assets/image/japan-with-prefectures.png">
+      <img id="jal123SeatingChartImage" crossorigin="anonymous" src="src/assets/image/jal-123-seating-plan.png">
+
+      <a-asset-item id="lowPolyPlaneForMap" src="src/assets/glb/small-low-poly-plane-for-map.glb"></a-asset-item>
+      <a-asset-item id="lowPolyDetailedPlane" src="src/assets/glb/low-poly-detailed-plane.glb"></a-asset-item>
+      <a-asset-item id="lowPolyPlaneSeat" src="src/assets/glb/low-poly-airplane-seat.glb"></a-asset-item>
+      <a-asset-item id="lowPolyOrangePlaneSeat" src="src/assets/glb/low-poly-orange-airplane-seat.glb"></a-asset-item>
+
+      <a-svg-curve id="flightPath" resize="0.038 0.038 1" offset="-0.006 0.008 0.05"
+        src="src/assets/svg/jp-flight-path.svg"></a-svg-curve>
+
+      <a-mixin id="titleAnimationMixin"
+        animation__slideback="property: object3D.position.z; to: -0.15; dur: 1500; easing: easeInSine; autoplay: false"
+        animation__fadeout_disappear="property: components.material.material.opacity; to: 0; dur: 1000; easing: linear; autoplay: false">
+      </a-mixin>
+      <!--         Mixin that narration images use for fading in and fading out -->
+      <a-mixin id="narrationItemMixin" material="opacity: 0;"
+        animation__slidein="property: object3D.position.z; from: -0.40; to: 0; dur: 3500; easing: easeOutSine; autoplay: false"
+        animation__fadein="property: components.material.material.opacity; from: 0; to: 1; dur: 3000; easing: linear; autoplay: false"
+        animation__slideback="property: object3D.position.z; from: 0; to: -0.40; dur: 3500; easing: easeInSine; autoplay: false"
+        animation__fadeout="property: components.material.material.opacity; from: 1; to: 0; dur: 3000; easing: linear; autoplay: false">
+      </a-mixin>
+      <!--         event_disappear is just a dummy event to trigger a listener attached to <a-scene> so that it deletes the element, see main-component.js-->
+      <a-mixin id="eventDisappearMixin"
+        animation__event_disappear="property: visible; from: true; to: false; dur: 1; easing: linear; autoplay: false">
+      </a-mixin>
+      <!--         this mixin allows me to make entities visible within an animation  -->
+      <a-mixin id="visibilityControlMixin" visible="false"
+        animation__makevisible="property: visible; from: false; to: true; dur: 1; autoplay: false"></a-mixin>
+      <!--         Mixin that the japan map with prefecture uses to scale the map -->
+      <a-mixin id="japanMapScaleMixin"
+        animation__scalex="property: object3D.scale.x; from: 1.3; to: 1.5; dur: 3000; easing: easeOutSine; autoplay: false"
+        animation__scaley="property: object3D.scale.y; from: 1.3; to: 1.5; dur: 3000; easing: easeOutSine; autoplay: false">
+      </a-mixin>
+      <!--         Mixin that allows fading in and out for the text of the prefecture names -->
+      <a-mixin id="narrationTextMixin" text="opacity: 0"
+        animation__slidedown="property: text.yOffset; from: 0.06; to: 0; dur: 600; easing: easeOutSine; autoplay: false"
+        animation__fadein="property: text.opacity; from: 0; to: 1; dur: 600; easing: linear; autoplay: false"
+        animation__fadeout="property: text.opacity; from: 1; to: 0; dur: 3000; easing: linear; autoplay: false">
+      </a-mixin>
+      <!--         Mixin that allows ring to appear -->
+      <a-mixin id="hanedaLocationRingMixin"
+        animation__outerringappear="property: radius-outer; from: 0.00001; to: 0.02; dur: 500; easing: easeOutSine; autoplay: false"
+        animation__innerringappear="property: radius-inner; from: 0.00001; to: 0.01; dur: 500; easing: easeOutSine; autoplay: false"
+        animation__fadeout="property: components.material.material.opacity; from: 1: to: 0; dur: 3000; easing: linear; autoplay: false">
+      </a-mixin>
+      <!--         Mixin that animates the flight path -->
+      <a-mixin id="flightPathMeshLineMixin" meshline="rangeStart: 0; rangeCount: 0"
+        animation__toemergencycontact="property: components.meshline.drawRangeCount; from: 0; to: 300; dur: 8500; easing: easeInSine; autoplay: false"
+        animation__slowfly="property: components.meshline.drawRangeCount; from: 300; to: 500; dur: 5500; easing: linear; autoplay: false"
+        animation__totheend="property: components.meshline.drawRangeCount; from: 500; to: 1112; dur: 16500; easing: easeOutSine; autoplay: false"
+        animation__fadeout="property: components.meshline.mesh.material.opacity; from: 1: to: 0; dur: 3000; easing: linear; autoplay: false">
+      </a-mixin>
+      <!--         Mixin that allows the emergency contact location square to appear -->
+      <a-mixin id="emergencyContactLocationPlaneMixin" scale="0 0 0"
+        animation__scalex="property: object3D.scale.x; from: 0; to: 1; dur: 700; easing: easeInOutSine; autoplay: false"
+        animation__scaley="property: object3D.scale.y; from: 0; to: 1; dur: 700; easing: easeInOutSine; autoplay: false"
+        animation__fadeout="property: components.material.material.opacity; from: 1: to: 0; dur: 3000; easing: linear; autoplay: false">
+      </a-mixin>
+      <!--         Mixin that animates the low poly plane shown on the map -->
+      <a-mixin id="lowPolyPlaneModelMixin" model-opacity="0"
+        animation__fadein="property: model-opacity; from: 0; to: 0.75; dur: 2000; easing: linear; autoplay: false"
+        animation__toemergencycontact="property: components.follow-curve.animationI; from: 0; to: 0.2697; dur: 8500; easing: easeInSine; autoplay: false"
+        animation__slowfly="property: components.follow-curve.animationI; from: 0.2697; to: 0.4496; dur: 5500; easing: linear; autoplay: false"
+        animation__totheend="property: components.follow-curve.animationI; from: 0.4496; to: 1; dur: 16500; easing: easeOutSine; autoplay: false"
+        animation__fadeout="property: model-opacity; from: 0.7; to: 0; dur: 1000; easing: linear; autoplay: false">
+      </a-mixin>
+      <!--         Mixin that animates the life-sized plane that flies over -->
+      <a-mixin id="lowPolyDetailedPlaneModelMixin" model-opacity="0"
+        event-transformer="eventName: animationbegin; newEventName: flybegin;"
+        sound="src: #planeTakeoffSound; autoplay: false; volume: 45; on: flybegin;"
+        animation__fadein="property: model-opacity; from: 0; to: 1; dur: 500; easing: linear; autoplay: false"
+        animation__flyhorizontal="property: object3D.position.x; from: 150; to: -150; dur: 10000; easing: linear; autoplay: false"
+        animation__flyvertical="property: object3D.position.y; from: 3; to: 7; dur: 10000; easing: linear; autoplay: false;"
+        animation__fadeout="property: model-opacity; from: 1; to: 0; dur: 1000; easing: linear; autoplay: false">
+      </a-mixin>
+      <!--         Mixin that animates the general gltf models, fade in fade out -->
+      <a-mixin id="narrationModelItemMixin" model-opacity="0"
+        animation__fadein="property: model-opacity; from: 0; to: 1; dur: 3000; easing: linear; autoplay: false"
+        animation__fadeout="property: model-opacity; from: 1; to: 0; dur: 3000; easing: linear; autoplay: false">
+      </a-mixin>
+      <!--         Mixin that animates the final 'to be continued' text at the end -->
+      <a-mixin id="toBeContinuedTextMixin" text="opacity: 0"
+        animation__slidein="property: text.zOffset; from: -0.2; to: 0.001; dur: 3000; easing: easeOutSine; autoplay: false"
+        animation__fadein="property: text.opacity; from: 0; to: 1; dur: 3000; easing: linear; autoplay: false"
+        animation__fadeout="property: text.opacity; from: 1; to: 0; dur: 3000; easing: linear; autoplay: false">
+      </a-mixin>
+      <!--         Mixin that makes the entire seating chart to have a rotate animation -->
+      <a-mixin id="rotateChartMixin" rotation="-30 0 0"
+        animation__rotatein="property: object3D.rotation.x; from: -20; to: -50; dur: 4000; easing: easeOutSine; autoplay: false">
+      </a-mixin>
+      <!--         Mixin that allows the second floor of seating chart to fade in only a little -->
+      <a-mixin id="secondFloorSeatingChartMixin" material="opacity: 0"
+        animation__fadein="property: components.material.material.opacity; from: 0; to: 0.1; dur: 3000; easing: linear; autoplay: false"
+        animation__fadeout="property: components.material.material.opacity; from: 0.1; to: 0; dur: 3000; easing: linear; autoplay: false">
+      </a-mixin>
+
+      <!--=-=-=-=-=-=-=-=- All timeline animations START -=-=-=-=-=-=-=-->
+      <a-timeline id="titleScreenFadeOutTimeline">
+        <a-timeline-group>
+          <a-timeline-animation select="#samStoryTextSolid" name="slideback"></a-timeline-animation>
+          <a-timeline-animation select="#samStoryTextSolid" name="fadeout_disappear" offset="500">
+          </a-timeline-animation>
+          <a-timeline-animation select="#samStoryTextTransparent" name="slideback"></a-timeline-animation>
+          <a-timeline-animation select="#samStoryTextTransparent" name="fadeout_disappear" offset="500">
+          </a-timeline-animation>
+          <a-timeline-animation select="#titleBlackPlane" name="slideback" offset="500"></a-timeline-animation>
+          <a-timeline-animation select="#titleBlackPlane" name="fadeout_disappear" offset="1000"></a-timeline-animation>
+          <a-timeline-animation select="#titleText" name="slideback" offset="1000"></a-timeline-animation>
+          <a-timeline-animation select="#titleText" name="fadeout_disappear" offset="1500"></a-timeline-animation>
+        </a-timeline-group>
+      </a-timeline>
+
+      <a-timeline id="introductoryNarrationTimeline">
+        <!--           scene 1 -->
+        <!--           24 sec start -->
+        <a-timeline-animation select=".columbiaImages.grouping" name="makevisible"></a-timeline-animation>
+        <a-timeline-group offset="24000">
+          <a-timeline-animation select="#columbiaImageEntity" name="fadein"></a-timeline-animation>
+          <a-timeline-animation select="#columbiaImageEntity" name="slidein"></a-timeline-animation>
+        </a-timeline-group>
+        <!--           27.5 sec end -->
+        <!--           33.3 sec start -->
+        <a-timeline-group offset="5800">
+          <a-timeline-animation select="#fallingColumbiaEntity" name="fadein"></a-timeline-animation>
+          <a-timeline-animation select="#fallingColumbiaEntity" name="slidein"></a-timeline-animation>
+        </a-timeline-group>
+        <!--           36.8 sec end -->
+        <!--           37.5 sec start -->
+        <a-timeline-group offset="700">
+          <a-timeline-animation select="#columbiaImageEntity" name="slideback"></a-timeline-animation>
+          <a-timeline-animation select="#columbiaImageEntity" name="fadeout" offset="500"></a-timeline-animation>
+          <a-timeline-animation select="#fallingColumbiaEntity" name="slideback" offset="800"></a-timeline-animation>
+          <a-timeline-animation select="#fallingColumbiaEntity" name="fadeout" offset="800"></a-timeline-animation>
+        </a-timeline-group>
+        <!--           41.8 sec end -->
+        <a-timeline-animation select="#columbiaImageEntity" name="event_disappear"></a-timeline-animation>
+        <a-timeline-animation select="#fallingColumbiaEntity" name="event_disappear"></a-timeline-animation>
+        <!--           scene 2 -->
+        <!--           45.8 sec start -->
+        <a-timeline-animation select=".japanMap.grouping" name="makevisible"></a-timeline-animation>
+        <a-timeline-group offset="4000">
+          <a-timeline-animation select="#japanMapOverlayEntity" name="slidein"></a-timeline-animation>
+          <a-timeline-animation select="#japanMapOverlayEntity" name="fadein" offset="600"></a-timeline-animation>
+          <a-timeline-animation select="#japanMapBlueBgEntity" name="fadein" offset="700"></a-timeline-animation>
+          <a-timeline-animation select="#japanMapBlueBgEntity" name="slidein" offset="700"></a-timeline-animation>
+        </a-timeline-group>
+        <!--           50 sec end -->
+        <!--           56.5 sec start -->
+        <a-timeline-group offset="6500">
+          <a-timeline-animation select="#japanMapBlueBgEntity" name="slideback"></a-timeline-animation>
+          <a-timeline-animation select="#japanMapBlueBgEntity" name="fadeout"></a-timeline-animation>
+          <a-timeline-animation select="#japanMapOverlayEntity" name="slideback" offset="500"></a-timeline-animation>
+          <a-timeline-animation select="#japanMapOverlayEntity" name="fadeout" offset="100"></a-timeline-animation>
+        </a-timeline-group>
+        <!--           60.5 sec end -->
+        <a-timeline-animation select="#japanMapBlueBgEntity" name="event_disappear"></a-timeline-animation>
+        <a-timeline-animation select="#japanMapOverlayEntity" name="event_disappear"></a-timeline-animation>
+        <!--           scene 3 -->
+        <!--           64 sec start -->
+        <a-timeline-animation select=".jalTakeoff.grouping" name="makevisible"></a-timeline-animation>
+        <a-timeline-group offset="3500">
+          <a-timeline-animation select="#japanTakeoffEntity" name="slidein"></a-timeline-animation>
+          <a-timeline-animation select="#japanTakeoffEntity" name="fadein"></a-timeline-animation>
+        </a-timeline-group>
+        <!--           67.5 sec end -->
+
+        <a-timeline-group offset="6500">
+          <a-timeline-animation select="#japanTakeoffEntity" name="fadeout"></a-timeline-animation>
+          <a-timeline-animation select="#japanTakeoffEntity" name="slideback"></a-timeline-animation>
+          <!--             4.5 -->
+          <a-timeline-animation select="#japanTakeoffEntity" name="event_disappear" offset="3499">
+          </a-timeline-animation>
+          <!--             4.5 -->
+          <a-timeline-animation select=".japanMapPrefectures.grouping" name="makevisible" offset="3499">
+          </a-timeline-animation>
+          <!--             4.5  -->
+          <a-timeline-animation select="#japanMapBlueLargeBgEntity" name="fadein" offset="3500"></a-timeline-animation>
+          <!--             7.5 -->
+          <a-timeline-animation select="#japanMapBlueLargeBgEntity" name="slidein" offset="3500"></a-timeline-animation>
+          <!--             8 -->
+          <a-timeline-animation select="#japanPrefecturesEntity" name="slidein" offset="3500"></a-timeline-animation>
+          <!--             8 -->
+          <a-timeline-animation select="#japanPrefecturesEntity" name="fadein" offset="4000"></a-timeline-animation>
+          <!--             8 -->
+          <a-timeline-animation select="#japanPrefecturesEntity" name="scalex" offset="4000"></a-timeline-animation>
+          <!--             8 -->
+          <a-timeline-animation select="#japanPrefecturesEntity" name="scaley" offset="4000"></a-timeline-animation>
+          <!--             8 -->
+        </a-timeline-group>
+
+        <!--           81 sec end -->
+        <!--           81 sec start -->
+        <a-timeline-group>
+          <!--             There's a simpler way to select them instead of by ID (e.g. #japanPrefecturesEntity ~ [text]:nth-of-type(2)) but
+            I do not like how nth-of-type is not actually a 'filter', you would think the above example selector would
+            consider `#japanPrefecturesEntity ~ [text]` then use `nth-of-type` over it but that is not the case,
+            nth-of-type kind of looks at ~, and kind of ignore [text] for its calculations, and [text] gets applied at the end
+            What ends up happening is `japanPrefecturesEntity ~ [text]:nth-of-type(1)` sometimes would not select anything
+            because `japanPrefecturesEntity ~ *:nth-of-type(1)` selects something that doesn't work with [text], so ultimately
+            the actual filter is [text] and not `nth-of-type`. TLDR: #japanPrefecturesEntity ~ [text]:nth-of-type(2) can be decomposed to:
+            select silbings of #japanPrefecturesEntity, find what type [text] selects on, use that as the type, filter siblings to same type,
+            among those siblings, find all with text atttr-->
+          <a-timeline-animation select="#mapPrefectureTextGunmaEntity" name="fadein"></a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextGunmaEntity" name="slidedown"></a-timeline-animation>
+
+          <a-timeline-animation select="#mapPrefectureTextSaitamaEntity" name="fadein" offset="100">
+          </a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextSaitamaEntity" name="slidedown" offset="100">
+          </a-timeline-animation>
+
+          <a-timeline-animation select="#mapPrefectureTextTokyoEntity" name="fadein" offset="200">
+          </a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextTokyoEntity" name="slidedown" offset="200">
+          </a-timeline-animation>
+
+          <a-timeline-animation select="#mapPrefectureTextYamanashiEntity" name="fadein" offset="300">
+          </a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextYamanashiEntity" name="slidedown" offset="300">
+          </a-timeline-animation>
+
+          <a-timeline-animation select="#mapPrefectureTextKanagawaEntity" name="fadein" offset="400">
+          </a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextKanagawaEntity" name="slidedown" offset="400">
+          </a-timeline-animation>
+
+          <a-timeline-animation select="#mapPrefectureTextChibaEntity" name="fadein" offset="500">
+          </a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextChibaEntity" name="slidedown" offset="500">
+          </a-timeline-animation>
+
+          <a-timeline-animation select="#mapPrefectureTextShizuokaEntity" name="fadein" offset="600">
+          </a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextShizuokaEntity" name="slidedown" offset="600">
+          </a-timeline-animation>
+        </a-timeline-group>
+        <!--           82.2 sec end -->
+        <!--           82.2 sec start -->
+        <a-timeline-group>
+          <a-timeline-animation select="#hanedaMapLocationRingEntity" name="outerringappear"></a-timeline-animation>
+          <a-timeline-animation select="#hanedaMapLocationRingEntity" name="innerringappear"></a-timeline-animation>
+        </a-timeline-group>
+        <!--           82.7 sec end -->
+        <!--           82.7 sec start -->
+        <a-timeline-group>
+          <a-timeline-animation select="#flightPathEntity" name="toemergencycontact"></a-timeline-animation>
+
+          <a-timeline-animation select="#lowPolyPlaneForMapEntity" name="toemergencycontact"></a-timeline-animation>
+          <a-timeline-animation select="#lowPolyPlaneForMapEntity" name="fadein" offset="400"></a-timeline-animation>
+        </a-timeline-group>
+
+        <!--           unknown times -->
+        <a-timeline-group>
+          <a-timeline-animation select="#emergencyContactMapLocationPlaneEntity" name="scalex"></a-timeline-animation>
+          <a-timeline-animation select="#emergencyContactMapLocationPlaneEntity" name="scaley"></a-timeline-animation>
+          <a-timeline-animation select="#flightPathEntity" name="slowfly"></a-timeline-animation>
+          <a-timeline-animation select="#lowPolyPlaneForMapEntity" name="slowfly"></a-timeline-animation>
+        </a-timeline-group>
+
+        <a-timeline-group>
+          <a-timeline-animation select="#flightPathEntity" name="totheend"></a-timeline-animation>
+          <a-timeline-animation select="#lowPolyPlaneForMapEntity" name="totheend"></a-timeline-animation>
+          <a-timeline-animation select="#lowPolyPlaneForMapEntity" name="fadeout" offset="15000"></a-timeline-animation>
+        </a-timeline-group>
+
+        <a-timeline-animation select="#lowPolyPlaneForMapEntity" name="event_disappear"></a-timeline-animation>
+
+        <a-timeline-group>
+          <a-timeline-animation select="#mapPrefectureTextGunmaEntity" name="fadeout"></a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextSaitamaEntity" name="fadeout" offset="50">
+          </a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextTokyoEntity" name="fadeout" offset="100">
+          </a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextYamanashiEntity" name="fadeout" offset="150">
+          </a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextKanagawaEntity" name="fadeout" offset="200">
+          </a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextChibaEntity" name="fadeout" offset="250">
+          </a-timeline-animation>
+          <a-timeline-animation select="#mapPrefectureTextShizuokaEntity" name="fadeout" offset="300">
+          </a-timeline-animation>
+          <a-timeline-animation select="#flightPathEntity" name="fadeout" offset="350"></a-timeline-animation>
+          <a-timeline-animation select="#hanedaMapLocationRingEntity" name="fadeout" offset="400">
+          </a-timeline-animation>
+          <a-timeline-animation select="#emergencyContactMapLocationPlaneEntity" name="fadeout" offset="450">
+          </a-timeline-animation>
+          <a-timeline-animation select="#japanMapBlueLargeBgEntity" name="fadeout" offset="500"></a-timeline-animation>
+          <a-timeline-animation select="#japanPrefecturesEntity" name="fadeout" offset="500"></a-timeline-animation>
+        </a-timeline-group>
+
+        <a-timeline-animation select="#japanPrefecturesEntity ~ [text]" name="event_disappear"></a-timeline-animation>
+        <a-timeline-animation select="#flightPathEntity" name="event_disappear"></a-timeline-animation>
+        <a-timeline-animation select="#hanedaMapLocationRingEntity" name="event_disappear"></a-timeline-animation>
+        <a-timeline-animation select="#emergencyContactMapLocationPlaneEntity" name="event_disappear">
+        </a-timeline-animation>
+        <a-timeline-animation select="#japanMapBlueLargeBgEntity" name="event_disappear"></a-timeline-animation>
+        <a-timeline-animation select="#japanPrefecturesEntity" name="event_disappear"></a-timeline-animation>
+        <a-timeline-animation select=".largeMapMaskPlaneEntity" name="event_disappear"></a-timeline-animation>
+
+
+        <a-timeline-animation select=".jalseating.grouping" name="makevisible"></a-timeline-animation>
+        <a-timeline-group offset="1700">
+          <a-timeline-animation select=".seatingCabinLegend" name="fadein"></a-timeline-animation>
+          <a-timeline-animation select="#seatingChartParent" name="rotatein"></a-timeline-animation>
+          <a-timeline-animation select="#jal123SeatingChartEntity" name="fadein" offset="200"></a-timeline-animation>
+          <a-timeline-animation select="#orangeSurvivorSeatsEntity" name="fadein" offset="300"></a-timeline-animation>
+          <a-timeline-animation select="#bluePlaneSeatsEntity" name="fadein" offset="450"></a-timeline-animation>
+        </a-timeline-group>
+
+        <a-timeline-group offset="7250">
+          <a-timeline-animation select="#jal123SeatingChartEntity" name="fadeout"></a-timeline-animation>
+
+          <a-timeline-animation select=".seatingCabinLegend" name="fadeout" offset="200"></a-timeline-animation>
+
+          <a-timeline-animation select="#bluePlaneSeatsEntity" name="fadeout" offset="300"></a-timeline-animation>
+
+          <a-timeline-animation select="#orangeSurvivorSeatsEntity" name="fadeout" offset="800"></a-timeline-animation>
+
+        </a-timeline-group>
+
+        <a-timeline-animation select="#jal123SeatingChartEntity" name="event_disappear"></a-timeline-animation>
+        <a-timeline-animation select=".seatingCabinLegend" name="event_disappear"></a-timeline-animation>
+        <a-timeline-animation select="#survivorSeatLabels" name="event_disappear"></a-timeline-animation>
+
+        <a-timeline-animation select="#toBeContinuedTextEntity" name="makevisible"></a-timeline-animation>
+
+        <a-timeline-group offset="2000">
+          <a-timeline-animation select="#toBeContinuedTextEntity" name="fadein"></a-timeline-animation>
+          <a-timeline-animation select="#toBeContinuedTextEntity" name="slidein"></a-timeline-animation>
+        </a-timeline-group>
+        <a-timeline-animation offset="1000" select="#toBeContinuedTextEntity" name="fadeout"></a-timeline-animation>
+      </a-timeline>
+
+      <a-timeline id="introductoryNarrationPlaneFlyoverTimeline">
+        <a-timeline-group offset="73000">
+          <a-timeline-animation select="#lowPolyDetailedPlaneEntity" name="fadein"></a-timeline-animation>
+          <a-timeline-animation select="#lowPolyDetailedPlaneEntity" name="flyhorizontal"></a-timeline-animation>
+          <a-timeline-animation select="#lowPolyDetailedPlaneEntity" name="flyvertical"></a-timeline-animation>
+          <a-timeline-animation select="#lowPolyDetailedPlaneEntity" name="fadeout" offset="7500">
+          </a-timeline-animation>
+        </a-timeline-group>
+        <a-timeline-animation select="#lowPolyDetailedPlaneEntity" name="event_disappear"></a-timeline-animation>
+      </a-timeline>
+    </a-assets>
+    <!--=-=-=-=-=-=-=-=- All timeline animations END -=-=-=-=-=-=-=-->
+
+
+
+    <!--=-=-=-=-=-=-=-=- Player ENTITY -=-=-=-=-=-=-=-->
+    <a-entity id="player"></a-entity>
+
+    <!--=-=-=-=-=-=-=-=- Environment ENTITY -=-=-=-=-=-=-=-->
+    <a-entity id="environment"></a-entity>
+
+    <!--=-=-=-=-=-=-=-=- Ground + Background ENTITY -=-=-=-=-=-=-=-->
+    <a-entity
+      environment="fog: 0.975; skyType: color; skyColor: #5e5e5e; horizonColor: #474747; lighting: none; lightPosition: 0 -2.5 -0.2; ground: flat; groundTexture: none; groundColor: #212121; grid: crosses; gridColor: #333333;">
+    </a-entity>
+    <a-entity light="type: directional; color: #a3a3a3; intensity: 0.6" position="0 1.4 -0.2"></a-entity>
+
+    <!--=-=-=-=-=-=-=-=- Title Screen ENTITY -=-=-=-=-=-=-=-->
+    <a-entity id="titleScreen" position="0 0 -1.9"></a-entity>
+
+    <!--=-=-=-=-=-=-=-=- Subtitle ENTITY -=-=-=-=-=-=-=-->
+    <a-entity id="subtitleEntity" subtitle="subtitleAsset: #introductorySubtitle; startEvent: startSubtitle"></a-entity>
+
+    <!--=-=-=-=-=-=-=-=- Button to follow Apple's audio policy -=-=-=-=-=-=-=-->
+    <div id="appleAudioButtonContainer" style="display: none;">
+      <div id="appleAudioDialog">
+        <h1 id="h1dialog">Audio muted 😓</h1>
+        <p id="pdialog">Touch/click anywhere to unmute. <br />
+          (More info <a target="_blank" rel="noopener noreferrer"
+            href="https://www.mattmontag.com/web/unlock-web-audio-in-safari-for-ios-and-macos">here</a>)</p>
+      </div>
+    </div>
+  </a-scene>
+</body>
+
+</html>

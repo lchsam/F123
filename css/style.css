@@ -1,0 +1,42 @@
+#appleAudioButtonContainer {
+  height: 100%;
+  width: 100%;
+  background-color: #00000059;
+  z-index: 1;
+  position: absolute;
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  resize: vertical;
+  overflow: auto;
+}
+
+#appleAudioDialog {
+  margin: 0 auto;
+  background-color: white;
+  padding: 20px;
+  resize: vertical;
+  -webkit-box-shadow: 5px 5px 41px -6px rgba(0,0,0,0.6);
+  -moz-box-shadow: 5px 5px 41px -6px rgba(0,0,0,0.6);
+  box-shadow: 5px 5px 41px -6px rgba(0,0,0,0.6);
+}
+
+#h1dialog {
+  font-family: sans-serif;
+  font-weight: 200;
+  font-style: normal;
+  margin-block-end: 0.3em;
+  margin-block-start: 0;
+}
+
+#pdialog {
+  font-family: sans-serif;
+  
+}
+
+#buttondialog {
+  width: 100%;
+  border: none;
+  height: 3em;
+}
