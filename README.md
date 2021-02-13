@@ -5,7 +5,12 @@ Visit https://flight123.glitch.me/
 
 <img src="https://i.imgur.com/M4e9lRu.png" alt="Screenshot of the start screen" width="500"/>
 
-_Source code to be added soon_
+
+## Table of Contents
+  - [Citations and Attributions](#citations-and-attributions)
+  - [Intentional Simplifications](#intentional-simplifications)
+  - [Modifications to A-Frame + Third party libraries](#modifications-to-a-frame--third-party-libraries)
+  - [My thoughts](#my-thoughts)
 
 
 ## Citations and Attributions
@@ -32,3 +37,27 @@ _Source code to be added soon_
 - “Japan Airlines 123 - sitting plan-ja” <https://commons.wikimedia.org/wiki/File:Japan_Airlines_123_-_sitting_plan-ja.svg>, by Ch1902, Eluveitie (original), available under the CC BY-SA 3.0 license <https://creativecommons.org/licenses/by-sa/3.0>, via Wikimedia Commons.
 
 - “AIRCRAFT ACCIDENT INVESTIGATION REPORT Japan Air Lines Co., Ltd. Boeing 747 SR-100, JA8119 Gunma Prefecture, Japan August 12, 1985” (PDF) <https://www.mlit.go.jp/jtsb/eng-air_report/JA8119.pdf>. Aircraft Accident Investigation Commission. June 19, 1987. Accessed 1/2/2021.
+
+## Intentional Simplifications
+There were many things I simplified to make the presentation easier.
+Below are somethings I decided not to include:
+- For the seating chart, I did not include the second floor (I tried including it but A-Frame did not like animating the fading in and out of a transparent image on top above another transparent image. Extra work is necessary and I personally think coding it directly in Three.js may be better)
+- Altitudes of the flight paths (I brainstormed a bit on how this can be done and decided that the setup of the project did not do well with it)
+- Firefox support for spatial audio (Here's an [stale A-Frame issue](https://github.com/aframevr/aframe/issues/3868) on it)
+
+## Modifications to A-Frame + Third party libraries
+- Modified the A-Frame's animation component
+  - Have `animationcomplete` events to bubble up instead of it not bubbling up (It made clean-up a little easier if I have it bubble up).
+  - Fixed A-Frame animation's `animationbegin` events not firing when inside a `animation-timeline` component (Superframe [Issue #216](https://github.com/supermedium/superframe/issues/216))
+- Modified the [animation-timeline](https://github.com/supermedium/superframe/tree/master/components/animation-timeline/) component's `offset` property so that the first animation can also be offset. (The original semantics was that `offset` would offset the animation if there was an animation before it. This means that if I have an animation that I want to offset right at the beginning, I am not able to do that. To do it, I need to use `setTimeout` to offset it which is not ideal). No one wants to look at setTimeout + offset to see when an animation starts. Keeping offsets in one place makes more sense. 
+- Modified the third party [Meshline component](https://github.com/andreasplesch/aframe-meshline-component) 
+  - Modified the meshline component to also take an `a-curve` element from the [aframe curve component](https://github.com/protyze/aframe-curve-component). This modified meshline component now has a `curve` property, which you can provide it a selector that points to an `a-curve` element. It centers 'anchor point' of geometry for the mesh.
+  - Now takes my custom `a-svg-curve` component (have a look at the components to see what it does).
+  - To have a `drawRangeStart`, `drawRangeCount` to show how much of the path to draw (useful for animation)
+- Modified A-Frame's text component to have yoffset actually working (I basically copied the changes from this pull request that has yet to be merged: [A-Frame PR#3886](https://github.com/aframevr/aframe/pull/3886)) (11/4/2020)
+
+## My thoughts
+
+A-Frame seems to have a lot on its hands and it's steadily being refined but there are quite a few things that should be addressed. Below are two PRs I found that kind of stuck out to me. (11/28/2020)
+  - https://github.com/aframevr/a-painter/pull/254
+  - https://github.com/aframevr/aframe/issues/2420
