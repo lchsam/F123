@@ -39,11 +39,11 @@ Visit https://flight123.glitch.me/
 
 ## Directory overview
 ```bash
-css/          # CSS styles specific to Safari
 libraries/    # A-Frame + third party libraries
 src/          # my own code + media files
   assets/     # media (img..etc) + json resources
   components/ # my specific A-Frame components
+  style/      # CSS styles specific to Safari
   templates/  # HTML templates
   utils/      # general standalone utilities
 index.html    # the app
