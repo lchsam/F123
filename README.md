@@ -1,8 +1,6 @@
 # F123
 A Web VR experience that talks about a tragic plane accident in Japan. 
 
-This project is considered finished, and so I will not update this repository.
-
 Visit https://flight123.glitch.me/
 
 <img src="https://i.imgur.com/M4e9lRu.png" alt="Screenshot of the start screen" width="500"/>
