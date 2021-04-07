@@ -3,6 +3,8 @@ A Web VR experience that talks about a tragic plane accident in Japan.
 
 Visit https://flight123.glitch.me/
 
+Or watch it on YouTube (recorded on the Oculus Quest 1): https://youtu.be/GSdPqDptxuo
+
 <img src="https://i.imgur.com/M4e9lRu.png" alt="Screenshot of the start screen" width="500"/>
 
 ## Table of Contents
@@ -29,7 +31,8 @@ Visit https://flight123.glitch.me/
 - “plane flyover takeoff” sound effect <https://freesound.org/people/tim.kahn/sounds/199263/> by tim.kahn, available under CC BY-NC 3.0 license <https://creativecommons.org/licenses/by-nc/3.0/>.
 
 - “Map of Japan with Prefectures - Outline” <https://freevectormaps.com/japan/JP-EPS-01-0004?ref=atr> by Striped Candy LLC, available under the Attribution License <https://freevectormaps.com/license?ref=footer>.
-  “Japan Airlines 123 fig01 Estimated flight path of JA8119” <https://commons.wikimedia.org/wiki/File:Japan_Airlines_123_fig01_Estimated_flight_path_of_JA8119_ja.png>, by 運輸安全委員会 (Japan Transport Safety Board), available under the CC BY 4.0 license <https://creativecommons.org/licenses/by/4.0>, via Wikimedia Commons.
+
+- “Japan Airlines 123 fig01 Estimated flight path of JA8119” <https://commons.wikimedia.org/wiki/File:Japan_Airlines_123_fig01_Estimated_flight_path_of_JA8119_ja.png>, by 運輸安全委員会 (Japan Transport Safety Board), available under the CC BY 4.0 license <https://creativecommons.org/licenses/by/4.0>, via Wikimedia Commons.
 
 - “Japan Airlines 123 - sitting plan-ja” <https://commons.wikimedia.org/wiki/File:Japan_Airlines_123_-_sitting_plan-ja.svg>, by Ch1902, Eluveitie (original), available under the CC BY-SA 3.0 license <https://creativecommons.org/licenses/by-sa/3.0>, via Wikimedia Commons.
 
